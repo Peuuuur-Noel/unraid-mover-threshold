@@ -27,8 +27,10 @@
     <!-- Post install -->
     <FILE Run="/bin/bash" Method="install">
         <INLINE>
-if [[ -e /usr/local/sbin/mover ]] && [[ ! -e /usr/local/sbin/mover_unraid ]]; then
-    mv /usr/local/sbin/mover /usr/local/sbin/mover_unraid
+if [[ -e /usr/local/sbin/mover ]]; then
+    if [[ ! -e /usr/local/sbin/mover_unraid ]]; then
+        mv /usr/local/sbin/mover /usr/local/sbin/mover_unraid
+    fi
 fi
 if [[ -e /usr/local/emhttp/plugins/&name;/mover ]]; then
     cp /usr/local/emhttp/plugins/&name;/mover /usr/local/sbin/mover
