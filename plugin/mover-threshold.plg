@@ -1,0 +1,70 @@
+<?xml version='1.0' standalone='yes'?>
+<!DOCTYPE PLUGIN [
+<!ENTITY name "mover-threshold">
+<!ENTITY author "Peuuuur Noel">
+<!ENTITY version "2025.02.20.0015">
+<!ENTITY launch "Settings/Scheduler">
+<!ENTITY gitURL "https://github.com/Peuuuur-Noel/unraid-mover-threshold/">
+<!ENTITY pluginURL "https://raw.githubusercontent.com/Peuuuur-Noel/unraid-mover-threshold/master/plugin/&name;.plg">
+<!ENTITY pluginPATH "/boot/config/plugins/&name;">
+<!ENTITY emhttpPATH "/usr/local/emhttp/plugins/&name;">
+<!ENTITY MD5 "069fc7425e0978b80e2b6fc190f5d113">
+<!ENTITY SHA256 "45b527df73bab9935294f7336ee2b5856f01e9cba0ef2063c60836d945333658">
+]>
+
+<PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="people-carry" min="7.0.0">
+    <CHANGES>
+###2025.02.20.0015
+- Initial release
+    </CHANGES>
+
+    <FILE Name="&pluginPATH;/&name;-plugin-&version;-x86_64.txz" Run="upgradepkg --install-new">
+        <URL>&gitURL;releases/download/&version;/&name;-plugin-&version;-x86_64.txz</URL>
+        <MD5>&MD5;</MD5>
+        <SHA256>&SHA256;</SHA256>
+    </FILE>
+
+    <!-- Post install -->
+    <FILE Run="/bin/bash" Method="install">
+        <INLINE>
+if [[ -e /usr/local/sbin/mover ]] && [[ ! -e /usr/local/sbin/mover_unraid ]]; then
+    mv /usr/local/sbin/mover /usr/local/sbin/mover_unraid
+fi
+if [[ -e /usr/local/emhttp/plugins/&name;/mover ]]; then
+    cp /usr/local/emhttp/plugins/&name;/mover /usr/local/sbin/mover
+    chmod +x /usr/local/sbin/mover
+fi
+
+# Remove old package when new is available
+find &pluginPATH;/*.txz ! -name '&name;-plugin-&version;-x86_64.txz' -type f -exec rm -f {} +
+
+echo ""
+echo "---------------------------------------------------------------------------------"
+echo " &name; has been installed."
+echo " Version: &version;"
+echo "---------------------------------------------------------------------------------"
+echo ""
+        </INLINE>
+    </FILE>
+
+    <FILE Run="/bin/bash" Method="remove">
+        <INLINE>
+echo "Removing &name;..."
+
+removepkg &pluginPATH;/*.txz
+rm &pluginPATH;/*.txz
+rm -rf &emhttpPATH;
+
+if [[ -e /usr/local/sbin/mover_unraid ]]; then
+    rm /usr/local/sbin/mover
+    mv /usr/local/sbin/mover_unraid /usr/local/sbin/mover
+fi
+
+echo ""
+echo "-----------------------"
+echo "&name; has been removed"
+echo "-----------------------"
+echo ""
+        </INLINE>
+    </FILE>
+</PLUGIN>

@@ -1,0 +1,62 @@
+#!/bin/bash
+
+process_id=$(ps h -o ppid= $PPID 2>/dev/null)
+process=$(ps h -o %c $process_id 2>/dev/null | xargs)
+
+no_move_on_parity=true
+reconstruct_write=true
+threshold=60
+mover_path=/usr/local/sbin/mover_unraid
+
+source <(fromdos <"/var/local/emhttp/var.ini")
+
+mover_log() {
+    if [[ $shareMoverLogging = "yes" ]]; then
+        logger $1
+    fi
+}
+
+mover_start() {
+    if $reconstruct_write; then
+        mover_log "Forcing turbo write on."
+        /usr/local/sbin/mdcmd set md_write_method 1
+    fi
+
+    $mover_path $1
+
+    if $reconstruct_write; then
+        mover_log "Restoring original turbo write mode."
+        /usr/local/sbin/mdcmd set md_write_method $md_write_method
+    fi
+}
+
+if [[ -z $1 ]]; then
+    mover_start
+    exit 0
+fi
+
+if [[ -n $1 ]] && [[ $process != "crond" ]]; then
+    mover_start $1
+    exit 0
+fi
+
+if $no_move_on_parity && [[ $mdResync != "0" ]]; then
+    mover_log "Parity Check/Data-Rebuild is running."
+    exit 0
+fi
+
+for SHARECFG in /boot/config/shares/*.cfg; do
+    source <(fromdos <"$SHARECFG")
+
+    if [[ $shareUseCache = yes && -n $shareCachePool && -d "/mnt/$shareCachePool" ]]; then
+        cache_size=$(df --output=used,size /mnt/$shareCachePool | awk 'NR==2 {print $1 / $2 * 100}')
+
+        if ! awk "BEGIN { exit ($cache_size >= $threshold) }"; then
+            mover_start start
+            break
+        else
+            mover_log "threshold ($threshold%) for $shareCachePool not reached: $cache_size%"
+            exit 0
+        fi
+    fi
+done
