@@ -12,7 +12,7 @@
 <!ENTITY SHA256 "45b527df73bab9935294f7336ee2b5856f01e9cba0ef2063c60836d945333658">
 ]>
 
-<PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="people-carry" min="7.0.0">
+<PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="cogs" min="7.0.0">
     <CHANGES>
 ###2025.02.20.0015
 - Initial release
