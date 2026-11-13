@@ -1,7 +1,7 @@
 #!/bin/bash
 
-process_id=$(ps h -o ppid= $PPID 2>/dev/null)
-process=$(ps h -o %c $process_id 2>/dev/null | xargs)
+process_id=$(ps h -o ppid= "$PPID" 2>/dev/null)
+process=$(ps h -o %c "$process_id" 2>/dev/null | xargs)
 
 no_move_on_parity=true
 reconstruct_write=true
@@ -12,32 +12,32 @@ source <(fromdos <"/var/local/emhttp/var.ini")
 
 mover_log() {
     if [[ $shareMoverLogging = "yes" ]]; then
-        logger $1
+        logger "$1"
     fi
 }
 
 mover_start() {
+    local rc=0
+
     if $reconstruct_write; then
         mover_log "Forcing turbo write on."
         /usr/local/sbin/mdcmd set md_write_method 1
     fi
 
-    $mover_path $1
+    "$mover_path" "$@"
+    rc=$?
 
     if $reconstruct_write; then
         mover_log "Restoring original turbo write mode."
-        /usr/local/sbin/mdcmd set md_write_method $md_write_method
+        /usr/local/sbin/mdcmd set md_write_method "$md_write_method"
     fi
+
+    return $rc
 }
 
-if [[ -z $1 ]]; then
-    mover_start
-    exit 0
-fi
-
-if [[ -n $1 ]] && [[ $process != "crond" ]]; then
-    mover_start $1
-    exit 0
+if [[ -n $1 && $process != "crond" ]]; then
+    mover_start "$1"
+    exit $?
 fi
 
 if $no_move_on_parity && [[ $mdResync != "0" ]]; then
@@ -49,7 +49,7 @@ for SHARECFG in /boot/config/shares/*.cfg; do
     source <(fromdos <"$SHARECFG")
 
     if [[ $shareUseCache = yes && -n $shareCachePool && -d "/mnt/$shareCachePool" ]]; then
-        cache_size=$(df --output=used,size /mnt/$shareCachePool | awk 'NR==2 {print $1 / $2 * 100}')
+        cache_size=$(df --output=used,size "/mnt/$shareCachePool" | awk 'NR==2 {print $1 / $2 * 100}')
 
         if ! awk "BEGIN { exit ($cache_size >= $threshold) }"; then
             mover_start start
@@ -60,3 +60,5 @@ for SHARECFG in /boot/config/shares/*.cfg; do
         fi
     fi
 done
+
+exit 0

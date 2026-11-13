@@ -2,18 +2,21 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name "mover-threshold">
 <!ENTITY author "Peuuuur Noel">
-<!ENTITY version "2025.02.20.0015">
+<!ENTITY version "2026.11.13.1515">
 <!ENTITY launch "Settings/Scheduler">
 <!ENTITY gitURL "https://github.com/Peuuuur-Noel/unraid-mover-threshold/">
 <!ENTITY pluginURL "https://raw.githubusercontent.com/Peuuuur-Noel/unraid-mover-threshold/master/plugin/&name;.plg">
 <!ENTITY pluginPATH "/boot/config/plugins/&name;">
 <!ENTITY emhttpPATH "/usr/local/emhttp/plugins/&name;">
-<!ENTITY MD5 "069fc7425e0978b80e2b6fc190f5d113">
-<!ENTITY SHA256 "45b527df73bab9935294f7336ee2b5856f01e9cba0ef2063c60836d945333658">
+<!ENTITY MD5 "b81c2a7e6fe999fd1153e7091228982b">
+<!ENTITY SHA256 "15e44cae2c7bc13682c9a074f385181a5c51abcc0a6557ab89f31480dbdc7eb5">
 ]>
 
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="cogs" min="7.0.0">
     <CHANGES>
+###2026.11.13.1515
+- Fix for Unraid 7.4.0
+
 ###2025.02.20.0015
 - Initial release
     </CHANGES>
