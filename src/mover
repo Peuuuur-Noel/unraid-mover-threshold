@@ -24,7 +24,16 @@ mover_start() {
         /usr/local/sbin/mdcmd set md_write_method 1
     fi
 
-    "$mover_path" "$@"
+    local run_dir
+    run_dir=$(mktemp -d)
+    if [[ -n $run_dir ]]; then
+        cp -f "$mover_path" "$run_dir/mover"
+        chmod +x "$run_dir/mover"
+        "$run_dir/mover" "$@"
+        rm -rf "$run_dir"
+    else
+        "$mover_path" "$@"
+    fi
     rc=$?
 
     if $reconstruct_write; then
