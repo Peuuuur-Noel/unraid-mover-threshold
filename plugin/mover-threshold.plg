@@ -9,7 +9,7 @@
 <!ENTITY pluginPATH "/boot/config/plugins/&name;">
 <!ENTITY emhttpPATH "/usr/local/emhttp/plugins/&name;">
 <!ENTITY MD5 "d707a5d36ba70fcc41bdf18d518dcbfd">
-<!ENTITY SHA256 "b72d07aeb4f2b9cf8b95fb5601d9eb398b709c5a60990183815b81af2fe97109">
+<!ENTITY SHA256 "35a32c67ee9555b2f089468a8dd45a28401d500c4024298df38c80b716c11129">
 ]>
 
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="cogs" min="7.0.0">
